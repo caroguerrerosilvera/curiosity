@@ -1,0 +1,672 @@
+---
+openapi: 3.0.2
+info:
+  title: Main Validator Suite API
+  version: 1.0.0
+  description: "**NOTE:** This is a preview of the API and it is not considered stable\
+    \ since refinements are still being made.\n\n# Introduction\n\nWelcome to **Truora\
+    \ Validators Suite API** [**RESTful API**](https://en.wikipedia.org/wiki/Representational_state_transfer)\
+    \ reference.\nYou may also want to check out our [**Check API docs**](https://docs.checks.truora.com/)\
+    \ or our [**Signals API docs**](https://docs.signals.truora.com/).\n\nTruora Validatior\
+    \ Suite API allows performing identity validations in a variety of ways. There\
+    \ are seven types of validations. To see their respective documentation, click\
+    \ on their names:\n\n- [**Security Identity Questions**](http://docs.validations.identity.truora.com):\
+    \ verifies the identity of a person by asking a defined number of questions about\
+    \ their personal information. The identity will be confirmed based on the correctness\
+    \ of the answers. the questions are based on the information obtained from a [**Background\
+    \ check**](https://docs.truora.com/#operation/createCheck).\n\n- [**Document Validation**](http://docs.validations.document.truora.com):\
+    \ validates that the document is real (meaning we can find it in government databases)\
+    \ and that it hasn't been manipulated by extracting information from a front and\
+    \ back picture.\n\n- [**Facial Recognition**](http://docs.validations.face.truora.com):\
+    \ verifies the identity of a person by comparing a video of the person with a\
+    \ picture of the person. Both must clearly display his or her face like a portrait.\n\
+    \n- [**Voice Recognition**](http://docs.validations.voice.truora.com): authenticates\
+    \ the identity of a person by comparing a current voice note of the person with\
+    \ the stored voice samples of the person.\n\n- [**Email Validation**](https://docs.validations.email.truora.com):\
+    \ verifies the ownership or permissions a person has over an email by comparing\
+    \ the code the person enters and the one that is mailed to the email address provided.\n\
+    \n-  [**Phone validation**](http://docs.validations.phone.truora.com): verifies\
+    \ the ownership a person has over a phone by comparing the code the person enters\
+    \ and the one that was sent to the phone.\n\n-  [**Enterprise data validation**](http://docs.validations.ent.truora.com):\
+    \ verifies the association a person has with a company in order for third parties\
+    \ to address them accordingly.\n\n## Validation steps\n\nMost validations are\
+    \ performed by following these three simple steps:\n\n![Validation steps](https://validations-apidocs-hosting-mobilehub-1715139576.s3.amazonaws.com/images/validation_steps.png)\n\
+    \n## SDKs\n\nWe offer SDKs in a wide array of programming languages in order to\
+    \ ease integration. Keep in mind, however that these SDKs are not intended to\
+    \ be used as a customer-ready product but as a tool for faster integration.\n\n\
+    If your favorite language is not on the next list, You can use our [OpenAPI 3\
+    \ spec](https://docs.truora.com/openapi.json) to generate it using the [Open API\
+    \ Generator](https://openapi-generator.tech/docs/installation).\n\nTo download\
+    \ the SDK click on the desired programming language:\n\n- [C# .Net Core](https://truora-sdk.s3.amazonaws.com/validations/validations_csharp-netcore_latest.zip)\n\
+    \n- [Elixir](https://truora-sdk.s3.amazonaws.com/validations/validations_elixir_latest.zip)\n\
+    \n- [Go](https://truora-sdk.s3.amazonaws.com/validations/validations_go_latest.zip)\n\
+    \n- [Java](https://truora-sdk.s3.amazonaws.com/validations/validations_java_latest.zip)\n\
+    \n- [JavaScript](https://truora-sdk.s3.amazonaws.com/validations/validations_javascript_latest.zip)\n\
+    \n- [Objective-C](https://truora-sdk.s3.amazonaws.com/validations/validations_objc_latest.zip)\n\
+    \n- [Php](https://truora-sdk.s3.amazonaws.com/validations/validations_php_latest.zip)\n\
+    \n- [Python](https://truora-sdk.s3.amazonaws.com/validations/validations_python_latest.zip)\n\
+    \n- [Ruby](https://truora-sdk.s3.amazonaws.com/validations/validations_ruby_latest.zip)\n\
+    \nYou can see the full list of supported platforms here:\n\nhttps://openapi-generator.tech/docs/generators"
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Truora API Team
+    url: https://www.truora.com
+    email: api@truora.com
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+  x-logo:
+    url: https://docs.validations.truora.com/logo.png
+servers:
+- url: https://api.validations.truora.com/
+  description: Truora Validations Suite Domain
+paths:
+  /v1/accounts:
+    summary: List and create validation accounts
+    description: Allows listing all the validation accounts associated with the user
+      creating new validation accounts.
+    post:
+      requestBody:
+        description: ""
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAccountInput'
+        required: true
+      tags:
+      - Accounts
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+          description: Created account details
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Validation error, at least one of the parameters was invalid."
+      security:
+      - api-key: []
+      operationId: createAccount
+      summary: Create Account
+      description: "Creates a new validation account. This step is optional since\
+        \ a validation account is automatically created on enrollment. However, it\
+        \ is encouraged to create custom validation accounts to more easily trace\
+        \ validations."
+    get:
+      tags:
+      - Accounts
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedAccounts'
+          description: Details of the accounts
+      security:
+      - api-key: []
+      operationId: getValidationAccounts
+      summary: Get Validation Accounts
+      description: |
+        Returns all the validation accounts that has been created for the user.
+  /v1/accounts/{validation_account_id}:
+    summary: Get a validation account
+    description: Returns a validation account identified by the ID provided.
+    get:
+      tags:
+      - Accounts
+      parameters:
+      - name: validation_account_id
+        description: Validation account ID
+        schema:
+          type: string
+        in: path
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+              examples:
+                get_validation:
+                  value:
+                    account_id: ACC1cd651a66a363bdf94b60644c6ece57a
+                    email: dhidalgo@truora.com
+                    country: CO
+                    document_type: national-id
+                    national_id: "1151953477"
+                    first_name: DIANA
+                    last_name: HIDALGO
+                    creation_date: 2020-04-06T20:01:04.634358552Z
+                    validators_prepared:
+                      email-verification: false
+                      face-recognition: false
+                      identity-questions: false
+                      phone-verification: false
+          description: Details of the account
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                not_found:
+                  value:
+                    code: 10404
+                    http_code: 404
+                    message: Validation account not found
+          description: Validation account was not found with the given ID
+      security:
+      - api-key: []
+      operationId: getValidationAccount
+      summary: Get Validation Account
+      description: Returns the validation account identified by the ID provided.
+    parameters:
+    - name: validation_account_id
+      description: Validation account ID
+      schema:
+        type: string
+      in: path
+      required: true
+  /v1/accounts/{validation_account_id}/validations:
+    summary: List and create validations
+    description: "Allows creating validations for a validation account. Additionally,\
+      \ allows listing the history of validations made on an account."
+    get:
+      tags:
+      - Accounts
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListValidationsOutput'
+              examples:
+                face-recognition:
+                  value: "type: face-recognition\r\nfile_format:"
+          description: List of all the validations
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No validation account was found with the given ID
+      security:
+      - api-key: []
+      operationId: getValidations
+      summary: Get Validations
+      description: Gets a list with all the validations performed on the validation
+        account.
+    parameters:
+    - name: validation_account_id
+      description: Validation account ID
+      schema:
+        type: string
+      in: path
+      required: true
+  /v1/config:
+    summary: Configuration
+    description: Allows setting up configuration parameters for every individual validator.
+      Some validations have different configuration fields.
+    post:
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateConfigInput'
+        required: true
+      tags:
+      - Config
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigMap'
+          description: OK
+      security:
+      - api-key: []
+      operationId: CreateValidationConfig
+      summary: Create Validation Config
+      description: Allows setting up the timeout and allowed retries for an individual
+        validator
+    get:
+      tags:
+      - Config
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigMap'
+          description: OK
+      security:
+      - api-key: []
+      operationId: ReadValidatorConfig
+      summary: Read Validator Config
+      description: Allows getting the current validator configuration
+    put:
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateConfigInput'
+        required: true
+      tags:
+      - Config
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigMap'
+          description: OK
+      security:
+      - api-key: []
+      operationId: UpdateValidatorConfig
+      summary: Update Validator Config
+      description: Allows updating a validator config
+    delete:
+      tags:
+      - Config
+      parameters:
+      - name: validator
+        description: Name of the validation config to delete
+        schema:
+          enum:
+          - identity-questions
+          - face-recognition
+          - voice-recognition
+          - email-verification
+          - phone-verification
+          - document-validation
+          - enterprise-data
+          type: string
+        in: query
+        required: true
+      - name: type
+        description: "Configuration type to be reset. If provided, the validator reset\
+          \ will only affect the configuration selected, All configurations will be\
+          \ reset otherwise"
+        schema:
+          enum:
+          - timeout
+          - allowed_retries
+          type: string
+        in: query
+      responses:
+        "200":
+          description: OK
+      security:
+      - api-key: []
+      operationId: DeleteValidatorConfig
+      summary: Delete Validator Config
+      description: "Allows deleting a validator config. Deleting the config sets its\
+        \ value back to the default value: \r\n- Email-verification:\r\n  - Retries:\
+        \ 2\r\n  - Timeout: 300\r\n- Phone-verification:\r\n  - Retries: 2\r\n  -\
+        \ Timeout: 300\r\n- Identity-questions:\r\n  - Retries: 1\r\n  - Timeout:\
+        \ 300\r\n- Voice-recognition:\r\n  - Timeout: 300\r\n- Face-recognition:\r\
+        \n  - Timeout: 300\r\n- Document-validation:\r\n  - Timeout: 300\r\n- Enterprise-data:\r\
+        \n  - Timeout: 300\r\n"
+components:
+  schemas:
+    Account:
+      description: Represents a validation account
+      required: []
+      properties:
+        account_id:
+          description: Validation account ID
+          type: string
+        creation_date:
+          format: date
+          description: Account creation date. RFC3339 format
+          type: string
+        country:
+          description: Validation account country
+          type: string
+        email:
+          description: Person e-mail address
+          type: string
+        document_type:
+          description: Person document type
+          type: string
+        national_id:
+          description: Person ID number
+          type: string
+        document_expedition_date:
+          format: date
+          description: Document issue date. RFC3339 format
+          type: string
+        first_name:
+          description: Person first name
+          type: string
+        last_name:
+          description: Person last name
+          type: string
+        phone_number:
+          description: Person phone number
+          type: string
+        facebook_user:
+          description: Person Facebook username
+          type: string
+        twitter_user:
+          description: Person Twitter username
+          type: string
+      example:
+        account_id: ACCeb0a75c30b435920351ef6f9323c4960
+        email: mdelgado1@truora.com
+        country: CO
+        document_type: national-id
+        national_id: "111111"
+        creation_date: 2019-09-10T14:30:59.99695077Z
+    CreatedAccounts:
+      description: Represents the details of all validation accounts
+      required:
+      - next
+      - self
+      - accounts
+      type: object
+      properties:
+        next:
+          description: 'Path to next page '
+          type: string
+        self:
+          description: Path to current page
+          type: string
+        accounts:
+          description: Account list
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+      example:
+        accounts:
+        - account_id: ACCeb0a75c30b435920351ef6f9323c4960
+          email: mdelgado1@truora.com
+          country: CO
+          document_type: national-id
+          national_id: "111111"
+          creation_date: 2019-09-10T14:30:59.99695077Z
+        self: /v1/accounts
+        next: ""
+    CreateAccountInput:
+      description: Represents the parameters required to create a validation account
+      required: []
+      type: object
+      properties:
+        email:
+          description: Person e-mail address
+          type: string
+        country:
+          description: Country where this person is located
+          enum:
+          - co
+          - ve
+          - cl
+          - mx
+          - pe
+          - do
+          - sv
+          - gt
+          - cr
+          - ec
+          - br
+          - ar
+          type: string
+        document_type:
+          description: Person document type
+          enum:
+          - national-id
+          - foreign-id
+          - pep
+          - passport
+          type: string
+        document_number:
+          description: Person document number
+          type: string
+        first_name:
+          description: Person first name
+          type: string
+        last_name:
+          description: Person last name
+          type: string
+        document_expedition_date:
+          description: Person document issue date. RFC3339 format
+          type: string
+        phone_number:
+          description: Person phone number
+          type: string
+        facebook_user:
+          description: Person Facebook username
+          type: string
+        twitter_user:
+          description: Person Twitter username
+          type: string
+    Error:
+      description: The error type is returned when an error occurred in the platform.
+      required:
+      - code
+      - message
+      - http_code
+      type: object
+      properties:
+        code:
+          description: Error code
+          type: integer
+        message:
+          description: Message describing the error
+          type: string
+        http_code:
+          description: HTTP error code
+          type: integer
+      example:
+        code: 10400
+        http_code: 400
+        message: "Invalid request: missing country"
+    ValidationSummary:
+      description: Represents a validation summary
+      required: []
+      type: object
+      properties:
+        ip_address:
+          description: Validation IP address
+          type: string
+        account_id:
+          description: Validation account ID
+          type: string
+        type:
+          description: Validation type
+          enum:
+          - identity-questions
+          - face-recognition
+          - voice-recognition
+          - email-verification
+          - phone-verification
+          - document-validation
+          type: string
+        creation_date:
+          format: date
+          description: Validation creation date. RFC3339 format
+          type: string
+        validation_id:
+          description: Validation ID
+          type: string
+        validation_status:
+          description: Validation status
+          enum:
+          - success
+          - failure
+          - pending
+          type: string
+      example:
+        validation_id: VLD147cf5f59049b3a9be4e37e22d290cdf
+        ip_address: 190.13.83.36
+        account_id: ACC45402c96525d19f533786493c5b72b0c
+        type: identity-questions
+        validation_status: success
+        creation_date: 2019-09-06T19:19:34.095400759Z
+    ListValidationsOutput:
+      title: Root Type for ListValidationsOutput
+      description: Represents the result of an account validation search
+      required: []
+      type: object
+      properties:
+        history:
+          description: History of all the validations made on the account
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationSummary'
+        self:
+          description: Path to the current page
+          type: string
+        next:
+          description: Path to the next page
+          type: string
+      example:
+        history:
+        - validation_id: VLD147cf5f59049b3a9be4e37e22d290cdf
+          ip_address: 190.13.83.36
+          account_id: ACC45402c96525d19f533786493c5b72b0c
+          type: identity-questions
+          validation_status: success
+          creation_date: 2019-09-06T19:19:34.095400759Z
+        self: /v1/accounts/ACC45402c96525d19f533786493c5b72b0c/validations
+        next: ""
+    CreateConfigInput:
+      description: Represents the intput required to create a Validator config
+      required:
+      - validator
+      type: object
+      properties:
+        validator:
+          description: Validator to be configured
+          enum:
+          - identity-questions
+          - face-recognition
+          - voice-recognition
+          - email-verification
+          - phone-verification
+          - document-validation
+          - enterprise-data
+          type: string
+        timeout:
+          description: Time in seconds users will have to perform the validation
+          type: number
+        allowed_retries:
+          description: Number of times users will be allowed to retry the validation
+          type: number
+        threshold:
+          format: float
+          description: Correctness required to pass the validation from 0 to 1
+          type: number
+    ConfigMap:
+      description: Map of validator configs
+      type: object
+      properties:
+        identity-questions:
+          $ref: '#/components/schemas/IdentityConfig'
+          description: Config for identity-questions validators
+        face-recognition:
+          $ref: '#/components/schemas/FaceConfig'
+          description: Config for face-recognition validators
+        voice-recognition:
+          $ref: '#/components/schemas/VoiceConfig'
+          description: Config for voice-recognition validators
+        email-verification:
+          $ref: '#/components/schemas/EmailConfig'
+          description: Config for email-verification validators
+        phone-verification:
+          $ref: '#/components/schemas/PhoneConfig'
+          description: Config for phone-verification validators
+        document-validation:
+          $ref: '#/components/schemas/VoiceConfig'
+          description: Config for document-validation validators
+        enterprise-data:
+          $ref: '#/components/schemas/VoiceConfig'
+          description: Config for enterprise-data validators
+    EmailConfig:
+      description: Configuration for a single validator
+      type: object
+      properties:
+        timeout:
+          description: Time in seconds users will have to perform the validation.
+            5 minutes by default
+          type: number
+        allowed_retries:
+          description: Number of times users will be allowed to retry the validation
+          type: number
+    PhoneConfig:
+      description: Configuration for a single validator
+      type: object
+      properties:
+        timeout:
+          description: Time in seconds users will have to perform the validation.
+            5 minutes by default
+          type: number
+        allowed_retries:
+          description: Number of times users will be allowed to retry the validation
+          type: number
+        custom_name:
+          description: Custom name for verification messages
+          type: string
+    IdentityConfig:
+      description: Configuration for a single validator
+      type: object
+      properties:
+        timeout:
+          description: Time in seconds users will have to perform the validation.
+            5 minutes by default
+          type: number
+        allowed_retries:
+          description: Number of times users will be allowed to retry the validation
+          type: number
+        threshold:
+          format: float
+          description: Correctness required to pass the validation from 0 to 1
+          type: number
+    VoiceConfig:
+      description: Configuration for a single validator
+      type: object
+      properties:
+        timeout:
+          description: Time in seconds users will have to perform the validation.
+            5 minutes by default
+          type: number
+    FaceConfig:
+      description: Configuration for a single validator
+      type: object
+      properties:
+        timeout:
+          description: Time in seconds users will have to perform the validation.
+            5 minutes by default
+          type: number
+        threshold:
+          format: float
+          description: Correctness required to pass the validation from 0 to 1
+          type: number
+  securitySchemes:
+    api-key:
+      type: apiKey
+      description: "To authenticate a request, the `Truora-API-Key` header must be\
+        \ provided along with the user API key.\n\nAn API key is a unique [**JWT**](https://en.wikipedia.org/wiki/JSON_Web_Token)\
+        \ linked to a user account."
+      name: Truora-API-Key
+      in: header
+security:
+- api-key: []
+tags:
+- name: Accounts
+  description: "Validation accounts offer an easy way to identify validator users.\
+    \ A single validation account can be used in as many validations as you see fit.\
+    \ In order to streamline the process, a validation account is automatically created\
+    \ on enrollment unless an existing ``account_id`` is provided. Use custom-named\
+    \ validation accounts in order to easily trace your validation usage since validation\
+    \ accounts are automatically named with a random combination of numbers and letters\
+    \ if a custom name is not provided."
+- name: Config
+  description: Allows setting up configuration parameters for every individual validator.
+    These parameters allows tailoring our validators to your specific needs and have
+    them perform exactly as you need.
